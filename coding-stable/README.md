@@ -33,6 +33,26 @@ Existing repository files and unrelated changes are outside this checkpoint.
 Validation: active-task output, no-active queue, duplicate-active rejection and
 invalid-JSON rejection were checked with temporary fixtures outside this folder.
 
+## Checkpoint Charlie
+Double-click Checkpoint.cmd. Enter progress made, the next action and test results.
+Blank test results keep the existing tests. Progress and next action are required.
+Only the active task is updated; task status, notes and commit reference stay as-is.
+The previous queue is kept in tasks.json.bak (ignored by Git). Each successful save
+replaces that backup with the immediately preceding queue. Invalid input leaves
+the queue untouched. Close the window before completing prompts to cancel.
+
+For scripted use, from the repository folder:
+
+    & .\coding-stable\Save-Checkpoint.ps1 -Checkpoint "Work completed" -NextAction "Next small step" -Tests "Checks passed"
+
+Optional -Notes and -LastCommit update those fields. -QueuePath supports a separate
+queue for checks. This saves progress only; Git commits remain a separate step.
+Checkpoint.cmd uses the same process-only policy override as Resume.cmd.
+
+Added 25 September 2026. Verified saves, repeated saves, backup contents,
+untouched other tasks, retained tests, and rejection without writes for blank
+progress, no active task, multiple active tasks and invalid JSON.
+
 ## Next small step
-Choose one small coding task. Mark CS-001 done and add that task as active with
-its test criteria and next action. Use this manual queue before adding automation.
+Use Checkpoint.cmd after the next small work session, then Resume.cmd to pick up
+again. Choose the next coding job before adding further features.

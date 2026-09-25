@@ -4,12 +4,29 @@
     {
       "task_id": "CS-001",
       "title": "Persistent Coding Stable task queue and resume",
-      "status": "active",
+      "status": "done",
       "last_checkpoint": "2026-09-25: Minimal queue and resume command implemented. Ready to choose the next small task.",
-      "tests": ["Resume shows CS-001 and next action", "No-active queue handled", "Multiple active tasks rejected", "Invalid JSON rejected"],
-      "next_action": "Choose one small coding task, mark CS-001 done, and add the new task as active before starting work.",
+      "tests": [
+        "Resume shows CS-001 and next action",
+        "No-active queue handled",
+        "Multiple active tasks rejected",
+        "Invalid JSON rejected"
+      ],
+      "next_action": "Complete: use CS-002 for the checkpoint-saving command.",
       "last_commit": "coding-stable-checkpoint-001",
       "notes": "last_commit is a Git tag identifying this initial checkpoint. No scheduler, agents, or automatic execution."
+    },
+    {
+      "task_id": "CS-002",
+      "title": "Checkpoint Charlie - save progress command",
+      "status": "active",
+      "last_checkpoint": "2026-09-25T10:01:56+01:00: Checkpoint Charlie implemented and verified. Ready for first use.",
+      "tests": [
+        "PASS: saves, repeat saves, backup, other-task preservation, retained tests, and invalid-input rejection."
+      ],
+      "next_action": "Use Checkpoint.cmd after the next small work session, then Resume.cmd.",
+      "last_commit": "0d46f0c7b8947767bf369d77e7e7c44bce45d3b6",
+      "notes": "Implementation complete. Active for first use; mark done when starting the next chosen task. Commit reference is the preceding checkpoint."
     }
   ]
 }
