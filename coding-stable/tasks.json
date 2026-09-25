@@ -19,14 +19,26 @@
     {
       "task_id": "CS-002",
       "title": "Checkpoint Charlie - save progress command",
-      "status": "active",
+      "status": "done",
       "last_checkpoint": "2026-09-25T10:01:56+01:00: Checkpoint Charlie implemented and verified. Ready for first use.",
       "tests": [
         "PASS: saves, repeat saves, backup, other-task preservation, retained tests, and invalid-input rejection."
       ],
-      "next_action": "Use Checkpoint.cmd after the next small work session, then Resume.cmd.",
-      "last_commit": "0d46f0c7b8947767bf369d77e7e7c44bce45d3b6",
+      "next_action": "Complete. Checkpoint command available for future tasks.",
+      "last_commit": "a82d6e2",
       "notes": "Implementation complete. Active for first use; mark done when starting the next chosen task. Commit reference is the preceding checkpoint."
+    },
+    {
+      "task_id": "CS-003",
+      "title": "Gigi inbox status command",
+      "status": "active",
+      "last_checkpoint": "2026-09-25T10:05:13+01:00: Gigi inbox command installed; 17 items, one waiting; source unchanged.",
+      "tests": [
+        "PASS: live read-only hash check, empty inbox, no waiting items, missing source, missing column."
+      ],
+      "next_action": "Review GLI-20260924-164017-C1FF using the existing Gigi review workflow.",
+      "last_commit": "a82d6e2",
+      "notes": "Implementation complete. Existing inbox remains the maintained source. No Hub rebuild."
     }
   ]
 }
