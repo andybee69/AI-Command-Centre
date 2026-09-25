@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    {
+      "task_id": "CS-001",
+      "title": "Persistent Coding Stable task queue and resume",
+      "status": "active",
+      "last_checkpoint": "2026-09-25: Minimal queue and resume command implemented. Ready to choose the next small task.",
+      "tests": ["Resume shows CS-001 and next action", "No-active queue handled", "Multiple active tasks rejected", "Invalid JSON rejected"],
+      "next_action": "Choose one small coding task, mark CS-001 done, and add the new task as active before starting work.",
+      "last_commit": "coding-stable-checkpoint-001",
+      "notes": "last_commit is a Git tag identifying this initial checkpoint. No scheduler, agents, or automatic execution."
+    }
+  ]
+}
