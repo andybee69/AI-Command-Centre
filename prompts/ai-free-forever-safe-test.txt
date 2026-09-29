@@ -1,0 +1,9 @@
+SAFE TEST PROMPT
+
+Give a concise comparison of these approaches:
+1. Local small language model
+2. Cloud large language model
+3. Browser-based free AI service
+
+Compare speed, privacy, cost, reasoning quality and best use case.
+Do not assume access to private company information.
