@@ -1,30 +1,26 @@
 # Coding Handover
 
 Current issue: #3 - T2 Ops Room + Conference Room
-Status: implementation passes tests; live integration check in progress.
+Status: implementation and BOTH live agent checks pass; phone access pending.
 
-Known-good implementation: 6cfac24, after 79fcae1 / 6904c57 / afd66db.
-Andy approved live connection checks and pushing on 30 September 2026.
-All 4 integration tests passed again. Private runtime files are not tracked.
-Existing unrelated Chippy/Gigi/OpenCode/local-AI changes remain untouched.
+Chippy read/post verified: 99a38e7a-f73b-4b58-bf00-78388faebe0a.
+Claude renewed login and real read/post verified: 9051e991-9762-4357-ad9f-67d98926f9ef.
+Claude read Chippy's message before posting. Neither response was simulated.
+Shared thread: 0aba8c50-c80c-4e1f-b9ba-d6d1e1c9d159.
+Room is running on http://127.0.0.1:8767. Runtime/key files remain ignored.
+Four integration tests and desktop/390px browser checks passed previously.
 
-Room is RUNNING at http://127.0.0.1:8767.
-Live discussion: 0aba8c50-c80c-4e1f-b9ba-d6d1e1c9d159.
-Chippy check sent to Shared conversation (6abcc74e-ecc0-83ed-9d43-36a19260f426).
-Chippy live read/post PASSED, verified event 99a38e7a-f73b-4b58-bf00-78388faebe0a.
-Andy explicitly approved the bounded Claude document/discussion transfer.
-Claude attempt failed: OAuth session expired and could not be refreshed.
-A fresh claude auth login --claudeai flow has opened; Andy must complete sign-in.
-Then retry the bounded live read/post test in discussion above.
-Phone: Andy confirmed work Wi-Fi, different home Wi-Fi and Vodafone while out.
-Work IPv4 is 192.168.1.63; BTB-37FGJF network profile is Public. NordLynx exists.
-No Tailscale installation found. Cloudflare free secure access is being evaluated;
-account availability and phone OS requested. No software installed or firewall,
-network category, public tunnel or router settings changed.
+Phone: Samsung S25 Ultra (Android), work Wi-Fi, home Wi-Fi and Vodafone.
+Cloudflare account created; observed Zero Trust Free activation remains on the
+checkout/payment screen. User must review terms and overage charging consent.
+Do not accept billing terms or activate payment authorisation for the user.
+No connector installed, firewall/router changes, or remote exposure introduced.
+Next: after user completes activation, configure the smallest authenticated
+private phone route, obtain required access/install approvals, then verify the
+physical phone on Wi-Fi and mobile data. Keep Issue #3 open until that passes.
 
-Next: check shared discussion via node apps/ops-room/client.mjs read; finish
-Claude check after renewed login, then phone access on an agreed secure route.
-Keep Issue #3 open until live checks pass. Source push is authorised; verify
-origin/main after pushing. Push of 646379a was verified against GitHub. Tests: node --test apps/ops-room/server.test.mjs.
-Launch: Open Ops Room.cmd; stop: Stop Ops Room.cmd. API/recovery: app README.
+Code and handover pushed through 6511e64; this checkpoint records Claude success.
+Push remains authorised. Tests: node --test apps/ops-room/server.test.mjs.
+Launch/stop: Open Ops Room.cmd / Stop Ops Room.cmd. Details: app README.
+Unrelated Chippy/Gigi/OpenCode/local-AI work stays untouched and uncommitted.
 Preserve safety/pre-reconcile-20260930 and pre-reconcile stash.
