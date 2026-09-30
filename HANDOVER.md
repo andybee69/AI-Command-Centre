@@ -1,21 +1,28 @@
 # Coding Handover
 
 Current issue: #3 - T2 Ops Room + Conference Room
-Status: slice 3 implemented; 4 automated tests pass; live integration acceptance pending.
+Status: implemented locally; automated/browser checks pass; final live-access acceptance pending.
 
-Committed slices: 79fcae1 shared persistence/API; 6904c57 responsive room UI.
-New slice: agent CLI, direct HANDOVER/architecture promotion, start/stop launchers,
-recovery/network instructions and AD-006. Separate agent client processes passed
-shared read/write; these simulate Chippy/Claude and are not live model sessions.
-Browser verified Andy posting in both rooms, issue reference, restart restoration,
-direct architecture promotion to a TEST document, resolved marker and 390px layout.
-No physical phone or live Chippy/Claude session has been connected yet.
+Known-good implementation: afd66db (slice 3), preceded by 6904c57 (UI) and
+79fcae1 (persistence/API). This checkpoint adds quiet launcher verification and
+thread creator/time display. Use HEAD for the complete checkpoint; nothing pushed.
 
-Next: commit this slice; run final launcher/client smoke check; update Issue #3.
-Then verify Chippy and Claude from their actual tools, and phone connectivity on
-an approved private network route. Keep Issue #3 open until those checks pass.
-Run: Open Ops Room.cmd. Tests: node --test apps/ops-room/server.test.mjs.
-Details and exact recovery/API steps: apps/ops-room/README.md.
-Code remains local, not pushed. Last known-good committed slice: 6904c57.
-Unrelated Chippy/Gigi/OpenCode/local-AI changes remain untouched; retain safety
-branch safety/pre-reconcile-20260930 and pre-reconcile stash.
+Verified: 4 integration tests; concurrent agent-client posts; exact restart
+recovery; actual launcher start/read/stop twice; browser Ops/Conference posting,
+issue links, direct promotion to a TEST architecture file, resolved state and
+390px phone-width layout without overflow. Test data is separate from real data.
+Issue #3 milestone comments posted. All runtime and access-key files ignored.
+
+Resume exactly:
+1. Open Ops Room.cmd (repo root). Key shown locally; app http://127.0.0.1:8767.
+2. In actual Chippy and Claude local-tool sessions on AGON_ONE, each run
+   node apps/ops-room/client.mjs read; post in one shared thread using the JSON
+   examples in apps/ops-room/README.md. Do not claim test identities are live AIs.
+3. Agree a private-network route and verify a physical phone. LAN opt-in commands
+   are in README. No firewall, tunnel or system settings have been changed.
+4. Re-run node --test apps/ops-room/server.test.mjs; record live results on #3.
+   Keep #3 open until acceptance passes. Push requires Andy's approval per AGENTS.
+
+Existing Chippy/Gigi/OpenCode/local-AI changes are untouched and uncommitted.
+Preserve safety/pre-reconcile-20260930 and the pre-reconcile stash.
+Room service is stopped cleanly after verification; no auto-start service installed.

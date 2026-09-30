@@ -1,3 +1,4 @@
+param([switch]$NoBrowser, [switch]$NoKey)
 $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $taskData = Join-Path $taskRoot 'data\ops-room-local'
@@ -22,7 +23,9 @@ if (-not $taskRunning) {
     }
 }
 if (-not $taskRunning) { throw "Room could not start. Read $taskData\server-error.log and apps\ops-room\README.md recovery instructions." }
-Write-Host 'Your private room access key (copy into the room login):'
-Write-Host $taskKey
-Start-Process 'http://127.0.0.1:8767'
+if (-not $NoKey) {
+    Write-Host 'Your private room access key (copy into the room login):'
+    Write-Host $taskKey
+}
+if (-not $NoBrowser) { Start-Process 'http://127.0.0.1:8767' }
 Write-Host 'The room server stays running after this window closes. No Windows startup service was installed.'

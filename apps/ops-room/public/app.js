@@ -10,7 +10,7 @@ async function post(body){return api('events',{...body,author:$('author').value}
 function render(){
  $('threads').hidden=mode!=='conference';$('ops-tab').setAttribute('aria-pressed',mode==='ops');$('conference-tab').setAttribute('aria-pressed',mode==='conference');
  const threads=state.events.filter(e=>e.kind==='thread');if(mode==='conference'&&!threads.some(e=>e.id===thread))thread=threads[0]?.id||null;
- const selected=threads.find(e=>e.id===thread);$('room-title').textContent=mode==='ops'?'Ops Room':selected?.title||'Conference Room';$('room-detail').textContent=mode==='ops'?'One shared feed for day-to-day coordination.':'Andy + Chippy + Claude · approach, results, disagreements and next steps.';
+ const selected=threads.find(e=>e.id===thread);$('room-title').textContent=mode==='ops'?'Ops Room':selected?.title||'Conference Room';$('room-detail').textContent=mode==='ops'?'One shared feed for day-to-day coordination.':'Andy + Chippy + Claude · approach, results, disagreements and next steps.'+(selected?' Started by '+selected.author+' · '+new Date(selected.at).toLocaleString():'');
  $('room-links').replaceChildren();if(mode==='conference')issueLinks($('room-links'),selected?.issues);
  $('thread-list').replaceChildren();for(const t of threads){const b=el('button',t.title,'thread');b.setAttribute('aria-pressed',t.id===thread);b.onclick=()=>{thread=t.id;render();};$('thread-list').append(b);}
  $('message-form').hidden=mode==='conference'&&!thread;
