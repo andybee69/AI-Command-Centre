@@ -1,33 +1,14 @@
 # Coding Handover
 
-Current issue: #3 — [T2] Ops Room + Conference Room — shared collaboration space
+Current issue: #3 - T2 Ops Room + Conference Room
+Status: slice 1 passed both automated tests; API/persistence ready.
 
-Status: ready to start
+T2 is isolated in apps/ops-room. Node core only, one shared authenticated HTTP API,
+append-only event files, serialized writes, single-writer lock, restart persistence.
+Existing Chippy/Gigi/OpenCode/local-AI work remains untouched and uncommitted.
 
-Completed:
-- T1 Reality Check completed.
-- T1A repository reconciliation completed safely.
-- Local and remote main histories reconciled.
-- Reconciled main pushed to GitHub and verified: main...origin/main = 0/0.
-- Safety branch retained: safety/pre-reconcile-20260930 at 43c61aa.
-- Safety stash retained: pre-reconcile-20260930.
-- Prior Chippy/Gigi/OpenCode/local-AI work remains intentionally uncommitted for ticket-by-ticket review.
-- Machine-local runtime/log/backup clutter is ignored.
+Next: build the responsive UI and promotion workflow. Commit only T2 files and this
+handover, then build responsive UI, promotion workflow and agent instructions.
+Last known-good baseline: 84f2fd0.
+Do not drop safety/pre-reconcile-20260930 or the pre-reconcile stash.
 
-Current repo state:
-- Tracked history is synchronized with origin/main.
-- Intentional uncommitted prior work remains in the working tree.
-- Do not bulk-commit that older work.
-
-Next action:
-- Start Issue #3.
-- Build the thinnest working Ops Room + Conference Room slice.
-- Conference Room must support Andy + Chippy + Claude discussing work, approach, results, disagreements and next steps.
-- Important outcomes must be promoted into GitHub Issues, HANDOVER.md, architecture decisions or AGON_BRAIN rather than living only in chat.
-
-Safety:
-- Do not drop the safety branch or stash yet.
-- Do not disturb unrelated Chippy/Gigi/OpenCode files while working T2.
-
-Rule:
-Keep this file short. It is the baton between coding sessions, not a project diary.

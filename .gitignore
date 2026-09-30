@@ -18,3 +18,6 @@ opencode.pre-workers.*.json
 
 # Accidental command-artifact files
 *Get-Content
+
+# T2 shared room private runtime
+/data/ops-room-local/
