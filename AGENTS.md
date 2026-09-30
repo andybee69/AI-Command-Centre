@@ -6,41 +6,50 @@ You are working inside the AGON AI Command Centre. These rules apply to every AI
 
 | Role | Job |
 |---|---|
-| Chippy (ChatGPT) | Coordinator. Writes business requirements and acceptance tests for tickets. |
+| Chippy (ChatGPT) | Coordinator. Writes business requirements and acceptance tests, reviews results and dispatches work. |
 | Codex | Bounded coding tickets. |
-| Claude (Claude Code / desktop) | Architecture review, plan refinement, and bounded coding tickets when Codex is unavailable. |
-| OpenCode / Ollama | Cheap local edits, inspection, simple tests. |
+| Claude (Claude Code / desktop) | Architecture review, plan refinement, and bounded coding tickets when needed. |
+| OpenCode / Ollama | Cheap local edits, inspection, classification and simple tests where suitable. |
 
-Any coder can pick up any open ticket. That is the point: when one AI runs out of tokens, another carries on from the files.
+Any coder can pick up any open ticket. When one AI stops, another carries on from GitHub + HANDOVER.md.
 
 ## Start of every session
 
 1. Read `HANDOVER.md`.
-2. Read the open GitHub issue named in HANDOVER.md.
-3. Run `git status` and `git log --oneline -5` to see where the code actually is.
-4. If HANDOVER.md and git disagree, trust git and tell Andy.
-
-## Scope
-
-- Focus on AGON Lifting UK work unless explicitly told otherwise.
-- Work only inside this repo folder and AGON_BRAIN.
-- Do not scan unrelated folders, drives, or services.
-- Do not infer file contents or system state. Verify first.
+2. Read the active GitHub Issue named there.
+3. Run `git status` and `git log --oneline -5`.
+4. Inspect the latest relevant commit/diff.
+5. If HANDOVER.md and git disagree, trust git and record the mismatch.
 
 ## Source of truth
 
-- OneDrive - Agon is the authoritative business file store.
-- GitHub is for code only.
-- Mintsoft is authoritative for UK stock.
-- Use actual files, exports, APIs, or commands rather than assumptions.
+- GitHub Issues, commits and repo files = technical delivery truth.
+- HANDOVER.md = current technical baton.
+- AGON_BRAIN = business/project knowledge, customers, products, research and commercial decisions.
+- OneDrive - Agon remains the authoritative business file store.
+- Mintsoft remains authoritative for UK stock.
+- docs/ARCHITECTURE_DECISIONS.md = settled architecture decisions.
+- Important decisions must not live only in chat.
 
 ## How to work
 
-1. **One ticket at a time.** Every piece of work is a GitHub issue using the Coding ticket template. No issue, no work.
-2. **Stay inside the ticket.** If you spot something else worth doing, add it to the Parked list in HANDOVER.md. Do not build it.
-3. **Thin slices.** Get the smallest version working first, then extend.
-4. **Commit after each working step**, with a message like `T2: add launcher menu`. Never commit passwords, API keys or tokens.
-5. **Follow the build path.** T1 Reality Check, T2 Launcher + Shell, T3 Persistent Tasks, T4 GIGI Vertical Slice, T5 Recovery & Docs. Evaluation Lane tools (Paperclip, OpenAI Dots, 0x Alpha / GLM, VoiceStudio) are not touched until the core slice works, and only through a ticket.
+1. One ticket at a time. No issue, no coding work.
+2. Stay inside the ticket. Park unrelated ideas rather than building them.
+3. Thin slices. Deliver the smallest working version first.
+4. Commit after each working step with a clear message.
+5. Never commit passwords, API keys, tokens, logs, caches or machine-local runtime data.
+6. Before stopping, update HANDOVER.md with the exact baton-pass state.
+7. Prefer existing/free/local tools where suitable; paid services only when they add clear value.
+8. Avoid architecture rewrites unless a documented problem requires one.
+
+## Ticket contract
+
+Each ticket should state:
+- Goal
+- Files / areas allowed to change
+- Acceptance test
+- Dependencies
+- Stop condition
 
 ## Tool use
 
@@ -48,32 +57,35 @@ Any coder can pick up any open ticket. That is the point: when one AI runs out o
 - Prefer already-installed or already-paid tools before recommending paid services.
 - Use the smallest tool or action necessary.
 - For environment checks, report only what tools actually return.
+- Ollama/OpenCode are optional helpers, not critical-path dependencies.
 
-## Saving tokens
+## Saving tokens and time
 
-- Read only the files the ticket needs. Search, or read line ranges, rather than opening whole files.
-- Avoid broad repo scans unless explicitly requested.
-- Do not paste whole files back into the chat. Show only what changed.
-- When the session is getting long, stop at the next working point, commit, and update HANDOVER.md before you run out. A clean stop beats a lost session.
+- Read only the files the ticket needs.
+- Avoid broad repo scans unless explicitly required.
+- Do not paste whole files into chat unless necessary.
+- Stop at a clean working point, commit, and update HANDOVER.md before a session runs dry.
 
 ## Safety
 
-- Outside the current ticket, you are read-only.
-- Inside the current ticket, you may create and edit files in this repo and commit them.
-- Ask Andy before: deleting, moving, renaming or overwriting existing files; installing software; pushing to GitHub; sending anything or making any external change; changing system settings.
-- If a requested action would modify something outside the ticket, explain the intended change first.
+- Outside the current ticket, be read-only.
+- Inside the ticket, create/edit repo files and commit as required.
+- Ask Andy before destructive actions, software installs, external sends, pushes, or system-setting changes unless the active ticket explicitly authorises them.
 - Never move, rename, overwrite or alter original customer, technical, literature or certification files in Agon_Master.
-- Do not claim a ticket is done until the acceptance test passes and the saved result has been checked.
+- Do not claim a ticket is complete until its acceptance test passes.
 
 ## Accuracy
 
-- Never invent files, folders, models, dependencies, settings, or installed software.
+- Never invent files, folders, models, dependencies, settings or installed software.
 - Clearly distinguish verified facts from assumptions.
 - If a command or tool does not return evidence, say so.
-- If uncertain, stop and ask rather than guessing.
+- If uncertain, stop and record the uncertainty rather than guessing.
 
 ## End of every session
 
-1. Commit working code.
-2. Update `HANDOVER.md` (current ticket, done, half-done, next step, blockers).
-3. Tell Andy, concisely and practically: what changed, the exact file paths, and what is left. Use three headings: what you verified, what is working, what is missing or broken.
+1. Commit working changes.
+2. Update HANDOVER.md with current ticket, completed work, in-progress work, blockers, exact next action, and last known-good commit.
+3. Add a concise issue comment with result, test status, blocker/next step.
+4. Tell Andy concisely what changed and what remains.
+
+If the current task conflicts with these rules, stop and record the conflict in the issue rather than improvising a new architecture.

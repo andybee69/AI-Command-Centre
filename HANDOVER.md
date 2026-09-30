@@ -1,32 +1,37 @@
-# HANDOVER.md
+# Coding Handover
 
-Read this first. Update it at the end of every session.
+Current issue: #4 — [T1A] Reconcile work-PC repository without losing local work
 
-**Last updated:** 2026-09-30
-**Updated by:** Claude (initial setup)
+Status: reconciliation in progress
 
-## Current ticket
-T1 Reality Check (not started, issue not yet created)
+Completed:
+- Remote Desktop Commander restored on Agon_One (0.2.52).
+- T1 Reality Check completed and recorded in docs/reality-check.md.
+- Safety branch created: safety/pre-reconcile-20260930 at 43c61aa.
+- Uncommitted/untracked work preserved in stash: pre-reconcile-20260930.
+- origin/main fetched.
+- Merge of origin/main into local main started.
+- AGENTS.md, CLAUDE.md and HANDOVER.md conflicts reviewed and merged deliberately.
 
-## Done
-- Repo rulebook created: AGENTS.md, CLAUDE.md, HANDOVER.md, coding ticket template
+In progress:
+- Complete merge commit.
+- Restore preserved working-tree changes safely.
+- Confirm final ahead/behind state and working tree status.
 
-## Half-done
-- Nothing
+Blockers / notes:
+- Machine-local runtime/cache folders (.runtime, data/chippy-local and local apps/chippy state) are intentionally not part of origin/main.
+- Ollama exists under .runtime but is not on PATH; it is optional, not a blocker.
+- Do not start feature work until repository reconciliation is complete.
 
-## Next step
-1. Confirm Git is installed on the work PC
-2. Create GitHub issue for T1 Reality Check using the Coding ticket template
-3. Chippy writes the acceptance test for T1
+Next action:
+- Finish the merge commit.
+- Re-apply the stash carefully.
+- Document any intentional remaining local changes.
+- Update Issue #4 and close it only when main is synchronized and resumable.
+- Then proceed to Issue #3 Ops Room + Conference Room.
 
-## Blockers / questions for Andy
-- Is installing software (Git, Ollama) allowed on the work PC under the current IT hold?
-- Can the work PC run Ollama? (RAM and graphics card check pending)
+Last known-good safety point:
+- safety/pre-reconcile-20260930 -> 43c61aa
 
-## Parked (ideas outside current ticket)
-- Merge "Stan the Scan Man" with the existing weekly github-scout skill rather than running two scouts
-
-## Change log
-| Date | Who | What |
-|---|---|---|
-| 2026-09-30 | Claude | Initial setup files |
+Rule:
+Keep this file short. It is the baton between coding sessions, not a project diary.
