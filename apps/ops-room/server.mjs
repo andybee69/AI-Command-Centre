@@ -17,10 +17,10 @@ function links(value=[]) {
   if(!Array.isArray(value) || value.length>20 || value.some(x=>typeof x!=='string'||!issuePattern.test(x))) bad('Use full GitHub issue URLs');
   return [...new Set(value)];
 }
-export async function createRoom({dir=path.resolve(here,'../../data/ops-room-local'),host='127.0.0.1',port=8767}={}) {
+export async function createRoom({dir=path.resolve(here,'../../data/ops-room-local'),host='127.0.0.1',port=8767,repoRoot=path.resolve(here,'../..')}={}) {
   await mkdir(dir,{recursive:true});
   const lock=await open(path.join(dir,'writer.lock'),'wx').catch(()=>{throw new Error('Room data is already locked. Stop the other server; after a crash follow README recovery.');});
-  let server;
+  let server, close;
   try {
     let token;
     try {token=(await readFile(path.join(dir,'access-token'),'utf8')).trim();}
@@ -50,7 +50,17 @@ export async function createRoom({dir=path.resolve(here,'../../data/ops-room-loc
         if(e.kind==='status') {if(!['open','resolved'].includes(input.status)) bad('Invalid status');e.status=input.status;}
         else {
           if(!['GitHub Issue','HANDOVER','Architecture decision','AGON_BRAIN'].includes(input.destination)) bad('Invalid destination');
-          e.destination=input.destination;e.reference=text(input.reference,'Destination reference',1000);e.body=text(input.body,'Conclusion');
+          e.destination=input.destination;e.body=text(input.body,'Conclusion');
+          if(input.saveDocument) {
+            if(!['HANDOVER','Architecture decision'].includes(e.destination)) bad('Direct save supports HANDOVER and Architecture decision only');
+            const relative=e.destination==='HANDOVER'?'HANDOVER.md':'docs/ARCHITECTURE_DECISIONS.md';
+            const document=path.join(repoRoot,relative);
+            // Require an existing authoritative document; never invent a second source.
+            await readFile(document,'utf8');
+            e.reference=`${relative}#room-${e.id}`;
+            const f=await open(document,'a');
+            try {await f.writeFile(`\n\n## ROOM-${e.id}\n\n${e.body}\n\nSource: T2 message ${e.target}; recorded by ${e.author}, ${e.at}.\n`);await f.sync();}finally{await f.close();}
+          } else e.reference=text(input.reference,'Destination reference',1000);
           if(e.destination==='GitHub Issue'&&!issuePattern.test(e.reference)) bad('Use the created GitHub issue URL');
         }
       } else bad('Unknown event kind');
@@ -68,10 +78,11 @@ export async function createRoom({dir=path.resolve(here,'../../data/ops-room-loc
         if(url.pathname.startsWith('/api/')) {
           const supplied=Buffer.from((req.headers.authorization||'').replace(/^Bearer /,''));const expected=Buffer.from(token);
           if(supplied.length!==expected.length||!timingSafeEqual(supplied,expected)) return send(401,{error:'Enter the room access key'});
+          if(req.method==='POST'&&url.pathname==='/api/shutdown') {send(200,{stopping:true});setImmediate(()=>close());return;}
           if(req.method==='GET'&&url.pathname==='/api/state') return send(200,state());
           if(req.method==='POST'&&url.pathname==='/api/events') {
             if(!req.headers['content-type']?.startsWith('application/json')) return send(415,{error:'JSON required'});
-            let body='';for await(const chunk of req) {body+=chunk;if(Buffer.byteLength(body)>65536) return send(413,{error:'Message too large'});}
+            const chunks=[];let size=0;for await(const chunk of req) {size+=chunk.length;if(size>65536)return send(413,{error:'Message too large'});chunks.push(chunk);}const body=Buffer.concat(chunks).toString('utf8');
             let input;try{input=JSON.parse(body);}catch{bad('Invalid JSON');}
             const job=queue.then(()=>save(input));queue=job.catch(()=>{});return send(201,await job);
           }
@@ -84,7 +95,8 @@ export async function createRoom({dir=path.resolve(here,'../../data/ops-room-loc
       }catch(e){send(e.status||500,{error:e.status?e.message:'Room could not save or load. Check server/storage.'});}
     });
     await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});
-    return {server,token,url:`http://${host}:${server.address().port}`,close:async()=>{await new Promise(r=>server.close(r));await queue;await lock.close();await unlink(path.join(dir,'writer.lock'));}};
+    let closing;close=()=>closing ||= (async()=>{await new Promise(r=>server.close(r));await queue;await lock.close();await unlink(path.join(dir,'writer.lock'));})();
+    return {server,token,url:`http://${host}:${server.address().port}`,close};
   } catch(e) {await lock.close();await unlink(path.join(dir,'writer.lock'));throw e;}
 }
 async function usingFile(filename,body) {const f=await open(filename,'wx',0o600);try{await f.writeFile(body);await f.sync();}finally{await f.close();}}
@@ -93,3 +105,4 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   console.log(`Ops Room: ${room.url}\nAccess key is in data/ops-room-local/access-token (keep private).`);
   for(const signal of ['SIGINT','SIGTERM']) process.once(signal,async()=>{await room.close();process.exit();});
 }
+
