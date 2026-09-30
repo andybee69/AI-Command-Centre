@@ -1,30 +1,33 @@
 # Coding Handover
 
-Current issue: #2 — [T1] Reality Check — prove the resumable coding workflow
+Current issue: T1 complete — next ticket is repository reconciliation
 
-Status: ready to execute on the work PC
+Status: PASS WITH ACTION
 
 Completed:
-- Added AGENTS.md universal operating rules.
-- Added CLAUDE.md Claude Code instructions.
-- Added bounded GitHub task issue template.
-- Added docs/ARCHITECTURE_DECISIONS.md.
-- Opened GitHub Issue #2 as the first test of the resumable workflow.
+- Remote Desktop Commander restored on Agon_One (0.2.52).
+- T1 work-PC toolchain check completed.
+- Git, Node, npm, OpenCode and Claude Code confirmed.
+- Local Git divergence identified safely without resetting or overwriting anything.
+- Results recorded in docs/reality-check.md.
 
 In progress:
-- T1 Reality Check has not yet been executed on the work PC.
+- None.
 
-Blockers:
-- None known. Local runtime/tool checks must be run on the work PC.
+Blockers / actions required:
+- Work-PC local main is 4 commits ahead and 6 commits behind origin/main, with additional uncommitted/untracked files.
+- Ollama is not currently available on PATH.
+- Do not begin normal feature coding until repository reconciliation is complete.
 
 Next action:
-- On the work PC, read Issue #2 and run only the checks listed there.
-- Write results to docs/reality-check.md.
-- Update this handover and commit the result.
-- Do not start the next feature ticket until T1 is complete.
+- Run the repository-reconciliation ticket.
+- Preserve all four local-only commits and all uncommitted work.
+- Integrate the remote operating-layer commits.
+- Return the repo to a clean, resumable state.
+- Then resume T2 Ops Room.
 
-Last known-good commit:
-- Operating-layer commit series ending with docs/ARCHITECTURE_DECISIONS.md.
+Last known-good remote commit:
+- T1 reality-check commit on origin/main.
 
 Rule:
 Keep this file short. It is the baton between coding sessions, not a project diary.
