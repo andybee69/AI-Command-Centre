@@ -1,14 +1,17 @@
 # Coding Handover
 
 Current issue: #3 - T2 Ops Room + Conference Room
-Status: slice 1 passed both automated tests; API/persistence ready.
+Status: slice 2 - responsive UI implemented and desktop posting checked.
 
-T2 is isolated in apps/ops-room. Node core only, one shared authenticated HTTP API,
-append-only event files, serialized writes, single-writer lock, restart persistence.
-Existing Chippy/Gigi/OpenCode/local-AI work remains untouched and uncommitted.
+Completed: slice 1 committed as 79fcae1 (API + durable event storage, 2 tests pass).
+Slice 2 adds Ops/Conference UI, attribution, timestamps, issue links, filters,
+resolved/reopen and explicitly confirmed promotion markers. Andy-attributed Ops
+and Conference posts were verified in the browser using separate test data.
+Browser check caught and fixed empty Conference view leaking Ops messages.
 
-Next: build the responsive UI and promotion workflow. Commit only T2 files and this
-handover, then build responsive UI, promotion workflow and agent instructions.
-Last known-good baseline: 84f2fd0.
-Do not drop safety/pre-reconcile-20260930 or the pre-reconcile stash.
-
+Next: agent CLI and real document promotion, launch/recovery docs; finish mobile
+viewport/browser verification, run tests, commit each slice, update Issue #3.
+Live Chippy/Claude access and a physical phone are not yet verified.
+Code is local, not pushed. Last known-good committed slice: 79fcae1.
+Unrelated Chippy/Gigi/OpenCode/local-AI changes are untouched. Preserve safety
+branch safety/pre-reconcile-20260930 and pre-reconcile stash.
