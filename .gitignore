@@ -1,1 +1,20 @@
 AI-Command-Centre-digest.txt
+
+# Local AI runtimes, models and private state
+.runtime/
+.base/
+
+# Chippy local project context and saved dashboard state
+/apps/chippy/seed.json
+/data/chippy-local/
+
+# Logs and machine-local watcher output
+*.log
+apps/gigi-inbox/watcher.log
+
+# Local/backup OpenCode config snapshots
+opencode.backup.json
+opencode.pre-workers.*.json
+
+# Accidental command-artifact files
+*Get-Content

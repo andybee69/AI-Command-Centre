@@ -2,36 +2,35 @@
 
 Current issue: #4 — [T1A] Reconcile work-PC repository without losing local work
 
-Status: reconciliation in progress
+Status: reconciled locally; push pending Andy approval
 
 Completed:
-- Remote Desktop Commander restored on Agon_One (0.2.52).
-- T1 Reality Check completed and recorded in docs/reality-check.md.
 - Safety branch created: safety/pre-reconcile-20260930 at 43c61aa.
-- Uncommitted/untracked work preserved in stash: pre-reconcile-20260930.
-- origin/main fetched.
-- Merge of origin/main into local main started.
-- AGENTS.md, CLAUDE.md and HANDOVER.md conflicts reviewed and merged deliberately.
+- Safety stash retained: pre-reconcile-20260930.
+- origin/main merged into local main.
+- AGENTS.md / CLAUDE.md / HANDOVER.md conflicts deliberately merged.
+- Local-only commits preserved.
+- Machine-local runtime/cache/log/backup files added to .gitignore.
+- Confirmed junk file opencode.jsonGet-Content removed.
+- Prior Chippy/Gigi/OpenCode work restored and left uncommitted for proper ticket-by-ticket review.
 
-In progress:
-- Complete merge commit.
-- Restore preserved working-tree changes safely.
-- Confirm final ahead/behind state and working tree status.
+Current Git state:
+- local main contains reconciled local + remote history.
+- origin/main is behind local main; no longer a two-way divergence.
+- intentional uncommitted work remains: Chippy app, Gigi watcher/config, OpenCode/local-AI scripts/config/docs.
 
-Blockers / notes:
-- Machine-local runtime/cache folders (.runtime, data/chippy-local and local apps/chippy state) are intentionally not part of origin/main.
-- Ollama exists under .runtime but is not on PATH; it is optional, not a blocker.
-- Do not start feature work until repository reconciliation is complete.
+Safety:
+- Do not hard reset.
+- Do not drop safety/pre-reconcile-20260930.
+- Do not drop stash pre-reconcile-20260930 until after the reconciled branch is pushed and verified.
+- Do not bulk-commit the remaining prior work.
 
 Next action:
-- Finish the merge commit.
-- Re-apply the stash carefully.
-- Document any intentional remaining local changes.
-- Update Issue #4 and close it only when main is synchronized and resumable.
+- Get Andy approval to push reconciled main to GitHub.
+- Push main.
+- Verify origin/main matches the reconciled history.
+- Comment on and close Issue #4.
 - Then proceed to Issue #3 Ops Room + Conference Room.
-
-Last known-good safety point:
-- safety/pre-reconcile-20260930 -> 43c61aa
 
 Rule:
 Keep this file short. It is the baton between coding sessions, not a project diary.
