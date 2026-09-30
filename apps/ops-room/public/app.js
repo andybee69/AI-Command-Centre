@@ -35,5 +35,3 @@ $('destination').onchange=updateDestination;$('save-document').onchange=updateDe
 $('conclusion').oninput=updateIssueLink;$('cancel-promotion').onclick=()=>$('promotion').close();
 $('promotion-form').onsubmit=async e=>{e.preventDefault();e.submitter.disabled=true;try{await post({kind:'promotion',target:promotionTarget,destination:$('destination').value,reference:$('reference').value,body:$('conclusion').value,saveDocument:$('save-document').checked});$('promotion').close();await refresh();}catch(err){error(err);$('promotion').close();}finally{e.submitter.disabled=false;}};
 if(key)refresh();setInterval(()=>{if(!document.hidden&&!$('promotion').open)refresh();},5000);
-
-

@@ -105,4 +105,3 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   console.log(`Ops Room: ${room.url}\nAccess key is in data/ops-room-local/access-token (keep private).`);
   for(const signal of ['SIGINT','SIGTERM']) process.once(signal,async()=>{await room.close();process.exit();});
 }
-
