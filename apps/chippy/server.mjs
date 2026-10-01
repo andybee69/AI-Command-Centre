@@ -1,5 +1,5 @@
 import http from 'node:http';
-import {readFile, writeFile, rename, mkdir} from 'node:fs/promises';
+import {readFile, writeFile, rename, mkdir, access} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFile} from 'node:child_process';
@@ -17,6 +17,22 @@ try { state=JSON.parse(await readFile(stateFile,'utf8')); }
 catch(e) { if(e.code!=='ENOENT') throw e; state=JSON.parse(await readFile(path.join(here,'seed.json'),'utf8')); }
 let saving=false;
 function reply(res,code,value) { res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value)); }
+async function probe(url) {
+  try { const response=await fetch(url,{signal:AbortSignal.timeout(1200)}); return response.status<500; } catch { return false; }
+}
+async function systemStatus() {
+  const config=JSON.parse(await readFile(path.join(repo,'apps','gigi-inbox','config.json'),'utf8'));
+  const brain=config.inbox_path.includes('\\05_GIGI_HUB\\')?config.inbox_path.split('\\05_GIGI_HUB\\')[0]:path.dirname(config.inbox_path);
+  const exists=async p=>{try{await access(p);return true;}catch{return false;}};
+  return {
+    checkedAt:new Date().toISOString(),
+    commandCentre:{ok:true,label:'Chippy dashboard',detail:origin},
+    brain:{ok:await exists(brain),label:'AGON_BRAIN',detail:brain},
+    gigi:{ok:await exists(config.inbox_path),label:'GIGI inbox',detail:config.inbox_path},
+    opsRoom:{ok:await probe('http://127.0.0.1:8767/'),label:'Ops Room',detail:'http://127.0.0.1:8767'},
+    localAI:{ok:await probe('http://127.0.0.1:11434/api/tags'),label:'Local AI / Ollama',detail:'http://127.0.0.1:11434'}
+  };
+}
 async function inbox() {
   const config=JSON.parse(await readFile(path.join(repo,'apps','gigi-inbox','config.json'),'utf8'));
   const script="$ErrorActionPreference='Stop'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; $rows=@(Import-Csv -LiteralPath $env:CHIPPY_INBOX); foreach($r in $rows) {foreach($f in @('ID','AddedAt','Source','URL','Status')) {if($r.PSObject.Properties.Name -notcontains $f){throw 'Inbox columns are incomplete'}}}; ConvertTo-Json -InputObject $rows -Compress";
@@ -31,6 +47,7 @@ const server=http.createServer(async(req,res)=>{
   res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
   const pathname=new URL(req.url,origin).pathname;
   if(req.method==='GET' && pathname==='/api/projects') return reply(res,200,state);
+  if(req.method==='GET' && pathname==='/api/system') return reply(res,200,await systemStatus());
   if(req.method==='GET' && pathname==='/api/inbox') {try{return reply(res,200,await inbox());}catch{return reply(res,503,{error:'The maintained Gigi inbox could not be read. Check apps/gigi-inbox/config.json and the source CSV.'});}}
   if(req.method==='PATCH' && pathname.startsWith('/api/projects/')) {
    if(req.headers.origin!==origin || !req.headers['content-type']?.startsWith('application/json')) return reply(res,403,{error:'Save from the dashboard.'});

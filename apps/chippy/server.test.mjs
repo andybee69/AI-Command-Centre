@@ -16,6 +16,7 @@ test('HTTP flow: seed, validation, private paths, origin protection and persiste
  let child=await start();
  try{
   let r=await fetch(origin+'/api/projects');let body=await r.json();assert.equal(body.projects.length,9);assert.equal(body.projects.filter(p=>p.provisional).length,4);
+  const system=await (await fetch(origin+'/api/system')).json();assert.equal(system.commandCentre.ok,true);assert.equal(typeof system.brain.ok,'boolean');assert.equal(typeof system.gigi.ok,'boolean');assert.equal(typeof system.opsRoom.ok,'boolean');assert.equal(typeof system.localAI.ok,'boolean');
   const home=await fetch(origin);assert.match(await home.text(),/Chippy Command Centre/);assert.ok(home.headers.get('content-security-policy').includes("frame-ancestors 'none'"));
   assert.equal((await fetch(origin+'/seed.json')).status,404);
   assert.equal((await fetch(origin+'/server.mjs')).status,404);
