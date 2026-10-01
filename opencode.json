@@ -1,0 +1,102 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/qwen3.5:4b",
+  "small_model": "ollama/qwen3.5:4b",
+  "enabled_providers": [
+    "ollama",
+    "google",
+    "openrouter"
+  ],
+  "autoupdate": false,
+  "share": "disabled",
+  "permission": {
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "bash": "ask",
+    "edit": "ask",
+    "external_directory": "deny",
+    "webfetch": "deny",
+    "websearch": "deny"
+  },
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "AGON local Ollama",
+      "options": {
+        "baseURL": "http://127.0.0.1:11434/v1"
+      },
+      "models": {
+        "qwen3.5:4b": {
+          "name": "Qwen3.5 4B CPU trial",
+          "limit": {
+            "context": 4096,
+            "output": 512
+          }
+        },
+        "gemma:7b": {
+          "name": "Gemma 7B local trial",
+          "limit": {
+            "context": 4096,
+            "output": 512
+          }
+        },
+        "qwen2.5-coder:7b": {
+          "name": "Qwen2.5 Coder 7B local",
+          "limit": {
+            "context": 16384,
+            "output": 512
+          }
+        },
+        "qwen2.5-coder-opencode:latest": {
+          "name": "Qwen2.5 Coder OpenCode 16K",
+          "limit": {
+            "context": 16384,
+            "output": 512
+          }
+        }
+      }
+    }
+  },
+  "agent": {
+    "grunt": {
+      "mode": "primary",
+      "prompt": "Complete the supplied text transformation only. Do not call tools. Return only the requested result.",
+      "permission": {
+        "*": "deny"
+      }
+    },
+    "foreman": {
+      "mode": "primary",
+      "model": "google/gemini-3.8-flash",
+      "description": "Routes Command Centre work to the lightest capable worker; avoid Codex unless genuinely necessary.",
+      "prompt": "You are the AGON Command Centre foreman. Route work to the smallest capable worker. Prefer local agents first, then Gemini, then DeepSeek/Claude/GPT Sol as needed. Keep Codex/Work off the critical path unless the task genuinely requires it or all configured workers are unsuitable. Verify results before escalating."
+    },
+    "local-coder": {
+      "mode": "subagent",
+      "model": "ollama/qwen2.5-coder-opencode:latest",
+      "description": "Free local coding worker for bounded edits, scripts, and code review."
+    },
+    "gemini-worker": {
+      "mode": "subagent",
+      "model": "google/gemini-3.8-flash",
+      "description": "Default cloud worker for general analysis, coding, and larger-context jobs."
+    },
+    "deepseek-worker": {
+      "mode": "subagent",
+      "model": "openrouter/~deepseek/deepseek-flash-latest",
+      "description": "Fast coding and second-opinion worker through OpenRouter."
+    },
+    "claude-worker": {
+      "mode": "subagent",
+      "model": "openrouter/anthropic/claude-fable-5.1",
+      "description": "Heavy reasoning, difficult debugging, architecture, and polished technical writing."
+    },
+    "sol-fallback": {
+      "mode": "subagent",
+      "model": "openrouter/~openai/gpt-sol-latest",
+      "description": "General fallback when other cloud workers fail or disagree."
+    }
+  }
+}
