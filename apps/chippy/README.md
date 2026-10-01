@@ -8,7 +8,7 @@ Double-click **Open Chippy.cmd** in the repository root. It starts a hidden loca
 - **Projects:** search/filter; click a name to edit its status, stage, next action and notes. Confirm provisional entries once checked.
 - **To-Do:** the same next actions from Projects, excluding Complete and Shelf. There is no duplicate task list.
 - **Chippy Chat:** prepare and copy a context message, then open the existing Project Board Design conversation. This is a manual handoff, not an AI/chat integration or conversation sync.
-- **Gigi / Inbox:** reads the existing maintained CSV using apps/gigi-inbox/config.json. Displays counts and waiting items; source links open only when clicked. Does not edit or duplicate the inbox.
+- **Gigi / Inbox:** works directly with the maintained AGON_BRAIN CSV. You can capture a link, review waiting items, save an assessment, set the decision/status and optional skill candidate. Saving a completed review also creates an evaluation Markdown file in the existing Evaluations folder. It does not install tools or run source links automatically.
 - **System:** shows a read-only health check for Chippy, AGON_BRAIN, the GIGI inbox, Ops Room and local Ollama. A red item is a status signal only; the dashboard does not auto-repair or start services.
 
 Lifecycle: Idea → Research → Planned → Building → Waiting → Active → Complete → Shelf.

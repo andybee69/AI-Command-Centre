@@ -14,5 +14,9 @@ The launcher uses a process-only PowerShell policy override.
 Verified: live status and oldest waiting item; input file hash unchanged;
 empty inbox; no waiting items; missing file; missing required column.
 
-Next small step: review the displayed waiting item using the existing Gigi
-review workflow. A cross-device Gigi Hub remains a separate, larger project.
+The Chippy dashboard now provides the working vertical slice: capture a link,
+see waiting items, write an assessment, choose the decision/status, and save the
+result back to this maintained inbox. Completed reviews create an evaluation
+Markdown file in the existing Evaluations folder. This does not automatically
+install tools, open links, or approve a skill. A cross-device Gigi Hub remains
+a separate, larger project.

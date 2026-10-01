@@ -10,6 +10,7 @@ const repo=path.resolve(here,'../..');
 const port=Number(process.env.CHIPPY_PORT || 8766);
 const origin=`http://127.0.0.1:${port}`;
 const dataDir=process.env.CHIPPY_DATA_DIR || path.join(repo,'data','chippy-local');
+const gigiConfig=process.env.CHIPPY_GIGI_CONFIG || path.join(repo,'apps','gigi-inbox','config.json');
 const stateFile=path.join(dataDir,'projects.json');
 const statuses=['Idea','Research','Planned','Building','Waiting','Active','Complete','Shelf'];
 let state;
@@ -17,11 +18,13 @@ try { state=JSON.parse(await readFile(stateFile,'utf8')); }
 catch(e) { if(e.code!=='ENOENT') throw e; state=JSON.parse(await readFile(path.join(here,'seed.json'),'utf8')); }
 let saving=false;
 function reply(res,code,value) { res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value)); }
+async function jsonBody(req,max=16000){let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>max)throw Object.assign(Error('Request is too large.'),{status:413});}try{return JSON.parse(body);}catch{throw Object.assign(Error('Invalid request.'),{status:400});}}
+async function gigiSettings(){return JSON.parse(await readFile(gigiConfig,'utf8'));}
 async function probe(url) {
   try { const response=await fetch(url,{signal:AbortSignal.timeout(1200)}); return response.status<500; } catch { return false; }
 }
 async function systemStatus() {
-  const config=JSON.parse(await readFile(path.join(repo,'apps','gigi-inbox','config.json'),'utf8'));
+  const config=await gigiSettings();
   const brain=config.inbox_path.includes('\\05_GIGI_HUB\\')?config.inbox_path.split('\\05_GIGI_HUB\\')[0]:path.dirname(config.inbox_path);
   const exists=async p=>{try{await access(p);return true;}catch{return false;}};
   return {
@@ -34,10 +37,26 @@ async function systemStatus() {
   };
 }
 async function inbox() {
-  const config=JSON.parse(await readFile(path.join(repo,'apps','gigi-inbox','config.json'),'utf8'));
+  const config=await gigiSettings();
   const script="$ErrorActionPreference='Stop'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; $rows=@(Import-Csv -LiteralPath $env:CHIPPY_INBOX); foreach($r in $rows) {foreach($f in @('ID','AddedAt','Source','URL','Status')) {if($r.PSObject.Properties.Name -notcontains $f){throw 'Inbox columns are incomplete'}}}; ConvertTo-Json -InputObject $rows -Compress";
   const {stdout}=await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-Command',script],{env:{...process.env,CHIPPY_INBOX:config.inbox_path},windowsHide:true,timeout:15000,maxBuffer:4*1024*1024});
   return {source:config.inbox_path,items:JSON.parse(stdout.replace(/^\uFEFF/,''))};
+}
+let gigiSaving=false;
+async function captureGigi(url) {
+  const parsed=new URL(url); if(!['http:','https:'].includes(parsed.protocol))throw Object.assign(Error('Enter a valid web link.'),{status:400});
+  const config=await gigiSettings(), addScript=path.join(repo,'apps','gigi-inbox','Add-GigiLink.ps1');
+  await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',addScript,'-InboxPath',config.inbox_path,'-Url',parsed.href],{windowsHide:true,timeout:15000,maxBuffer:1024*1024});
+  return inbox();
+}
+async function assessGigi(id,data) {
+  if(!/^GLI-[A-Z0-9-]+$/i.test(id))throw Object.assign(Error('Invalid GIGI item.'),{status:400});
+  const allowed=['Waiting for review','Evaluated - reference only','Approved - skill created','Rejected - not useful'];
+  if(!allowed.includes(data.status))throw Object.assign(Error('Choose a valid review status.'),{status:400});
+  for(const key of ['skillCandidate','notes','assessment'])if(data[key]!==undefined&&(typeof data[key]!=='string'||data[key].length>6000))throw Object.assign(Error('Assessment fields must be text under 6,000 characters.'),{status:400});
+  const config=await gigiSettings(), helper=path.join(repo,'apps','gigi-inbox','Update-GigiAssessment.ps1');
+  await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',helper,'-InboxPath',config.inbox_path,'-Id',id,'-Status',data.status,'-SkillCandidate',data.skillCandidate||'','-Notes',data.notes||'','-Assessment',data.assessment||''],{windowsHide:true,timeout:15000,maxBuffer:1024*1024});
+  return inbox();
 }
 const server=http.createServer(async(req,res)=>{
  try {
@@ -49,6 +68,16 @@ const server=http.createServer(async(req,res)=>{
   if(req.method==='GET' && pathname==='/api/projects') return reply(res,200,state);
   if(req.method==='GET' && pathname==='/api/system') return reply(res,200,await systemStatus());
   if(req.method==='GET' && pathname==='/api/inbox') {try{return reply(res,200,await inbox());}catch{return reply(res,503,{error:'The maintained Gigi inbox could not be read. Check apps/gigi-inbox/config.json and the source CSV.'});}}
+  if(req.method==='POST' && pathname==='/api/inbox/capture') {
+   if(req.headers.origin!==origin || !req.headers['content-type']?.startsWith('application/json')) return reply(res,403,{error:'Capture from the dashboard.'});
+   if(gigiSaving)return reply(res,409,{error:'Another GIGI update is finishing. Please try again.'});gigiSaving=true;
+   try{const data=await jsonBody(req);if(!data||typeof data.url!=='string'||data.url.length>3000)return reply(res,400,{error:'Enter a valid link.'});return reply(res,200,await captureGigi(data.url.trim()));}finally{gigiSaving=false;}
+  }
+  if(req.method==='PATCH' && pathname.startsWith('/api/inbox/')) {
+   if(req.headers.origin!==origin || !req.headers['content-type']?.startsWith('application/json')) return reply(res,403,{error:'Review from the dashboard.'});
+   if(gigiSaving)return reply(res,409,{error:'Another GIGI update is finishing. Please try again.'});gigiSaving=true;
+   try{const id=decodeURIComponent(pathname.slice('/api/inbox/'.length));const data=await jsonBody(req);return reply(res,200,await assessGigi(id,data));}finally{gigiSaving=false;}
+  }
   if(req.method==='PATCH' && pathname.startsWith('/api/projects/')) {
    if(req.headers.origin!==origin || !req.headers['content-type']?.startsWith('application/json')) return reply(res,403,{error:'Save from the dashboard.'});
    const id=pathname.slice('/api/projects/'.length);const index=state.projects.findIndex(p=>p.id===id);
