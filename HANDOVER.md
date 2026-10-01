@@ -1,6 +1,17 @@
 # Coding Handover
 
-Current issue: #3 - T2 Ops Room + Conference Room
+## Command Centre foundation — COMPLETE (T1-T5, 1 Oct 2026)
+
+Normal start: double-click `START COMMAND CENTRE.cmd` in the repo root.
+Chippy: http://127.0.0.1:8766. Ops Room: http://127.0.0.1:8767.
+Chippy now includes project views, GIGI capture/review, and System health status.
+Recovery instructions: `docs/recovery.md`.
+Do not rebuild this foundation or introduce a new framework without a proven blocker.
+GitHub `main` is the code source of truth; AGON_BRAIN remains the business source.
+
+## Separate open item — phone access
+
+Current issue: #3 - Ops Room + Conference Room phone access
 Status: implementation and BOTH live agent checks pass; phone access pending.
 
 Chippy read/post verified: 99a38e7a-f73b-4b58-bf00-78388faebe0a.

@@ -3,7 +3,7 @@ $port = if ($env:CHIPPY_PORT) { [int]$env:CHIPPY_PORT } else { 8766 }
 $url = "http://127.0.0.1:$port"
 try {
     $existing = Invoke-RestMethod "$url/api/projects" -TimeoutSec 2
-    if ($existing.schemaVersion -eq 1 -and $existing.projects) { Start-Process $url; exit }
+    if ($existing.schemaVersion -eq 1 -and $existing.projects) { if ($env:CHIPPY_NO_BROWSER -ne '1') { Start-Process $url }; exit }
     throw 'The selected port is being used by another app.'
 } catch {
     if ($_.Exception.Message -eq 'The selected port is being used by another app.') { throw }
@@ -19,7 +19,7 @@ for ($i=0; $i -lt 30; $i++) {
     try { $ready = Invoke-RestMethod "$url/api/projects" -TimeoutSec 1 } catch { continue }
     if ($ready.schemaVersion -eq 1) {
         Set-Content -LiteralPath (Join-Path $logs 'server.pid') -Value $process.Id
-        Start-Process $url
+        if ($env:CHIPPY_NO_BROWSER -ne '1') { Start-Process $url }
         exit
     }
 }
