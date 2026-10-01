@@ -1,0 +1,2 @@
+# Seed contains an internal operational snapshot. Keep business context local.
+seed.json
