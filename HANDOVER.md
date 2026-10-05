@@ -57,3 +57,22 @@ Bordy-inspired home-screen upgrade implemented in Chippy:
 
 No AGON business source was migrated or replaced. AGON_BRAIN remains authoritative.
 Verification: node --check apps/chippy/public/app.js; node --test apps/chippy/server.test.mjs — 2/2 pass.
+
+
+## Customer-led Trip Planner — 5 Oct 2026
+
+Andy clarified that trip planning must be driven by the 2026 customer database, not hard-coded itineraries. The intended workflow is: choose area/postcode and/or customer type, discover matching accounts/prospects, then select the companies to visit.
+
+Implemented first usable slice in Chippy:
+- New Trip Planner navigation item.
+- Live read-only query of `Database/2026/MASTER_Customers_2026_v2.xlsx` (5,328 rows / 16 columns) via Python/openpyxl.
+- Filters: area/postcode, customer type, free-text search.
+- Select/remove companies in a browser-local visit list.
+- Cardiff is the initial default/current-use example.
+- Noted data-quality risk: city-only matching can confuse South Wales Newport with Isle of Wight records; use postcode/country context.
+
+Verification:
+- node --check app.js + server.mjs passed.
+- customer-db.py live Cardiff query passed.
+- /api/customers live test on alternate port returned 12 Cardiff sites.
+- existing Chippy tests 2/2 passed.

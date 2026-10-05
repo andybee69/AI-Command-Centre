@@ -33,3 +33,10 @@ node --test apps/chippy/server.test.mjs
 The tests use a temporary data directory and alternate port; they do not edit real project data. CHIPPY_PORT chooses an alternate port; CHIPPY_DATA_DIR overrides the state directory for tests. Use the exact 127.0.0.1 address (not localhost) because the server checks its Host and Origin headers. It listens only on loopback, serves an explicit public file list, rejects cross-origin writes, and does not expose repository files or run commands from submitted text.
 
 If the inbox cannot be read, check the existing inbox config and CSV availability. If the dashboard cannot start, inspect data/chippy-local/server-error.log. If another application owns the port, choose a different CHIPPY_PORT. Multiple browser tabs share saved state, but refresh a stale tab before editing the same project in another tab; real-time collaboration is not included.
+
+
+## Trip Planner
+- **Trip Planner:** reads the live `Database/2026/MASTER_Customers_2026_v2.xlsx` workbook through the local Python/openpyxl helper.
+- Filter by area/postcode, customer type, and free-text search.
+- Select companies into a browser-local visit list; the source workbook remains read-only.
+- Area matching checks city/county/postcode/country text, which avoids relying only on ambiguous city names such as Newport.

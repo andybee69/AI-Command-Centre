@@ -49,6 +49,14 @@ async function captureGigi(url) {
   await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',addScript,'-InboxPath',config.inbox_path,'-Url',parsed.href],{windowsHide:true,timeout:15000,maxBuffer:1024*1024});
   return inbox();
 }
+async function customers(query) {
+  const area=(query.get('area')||'').slice(0,80);
+  const type=(query.get('type')||'').slice(0,120);
+  const q=(query.get('q')||'').slice(0,120);
+  const helper=path.join(here,'customer-db.py');
+  const {stdout}=await promisify(execFile)('python',[helper,'--area',area,'--type',type,'--q',q,'--limit','250'],{windowsHide:true,timeout:20000,maxBuffer:8*1024*1024});
+  return JSON.parse(stdout.replace(/^\uFEFF/,''));
+}
 async function assessGigi(id,data) {
   if(!/^GLI-[A-Z0-9-]+$/i.test(id))throw Object.assign(Error('Invalid GIGI item.'),{status:400});
   const allowed=['Waiting for review','Evaluated - reference only','Approved - skill created','Rejected - not useful'];
@@ -64,8 +72,9 @@ const server=http.createServer(async(req,res)=>{
   if(req.headers.origin && req.headers.origin!==origin) return reply(res,403,{error:'Other websites cannot access this dashboard.'});
   res.setHeader('X-Content-Type-Options','nosniff');
   res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
-  const pathname=new URL(req.url,origin).pathname;
+  const parsedUrl=new URL(req.url,origin);const pathname=parsedUrl.pathname;
   if(req.method==='GET' && pathname==='/api/projects') return reply(res,200,state);
+  if(req.method==='GET' && pathname==='/api/customers') {try{return reply(res,200,await customers(parsedUrl.searchParams));}catch(e){console.error(e.message);return reply(res,503,{error:'The 2026 customer database could not be read.'});}}
   if(req.method==='GET' && pathname==='/api/system') return reply(res,200,await systemStatus());
   if(req.method==='GET' && pathname==='/api/inbox') {try{return reply(res,200,await inbox());}catch{return reply(res,503,{error:'The maintained Gigi inbox could not be read. Check apps/gigi-inbox/config.json and the source CSV.'});}}
   if(req.method==='POST' && pathname==='/api/inbox/capture') {
