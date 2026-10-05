@@ -41,3 +41,19 @@ Push remains authorised. Tests: node --test apps/ops-room/server.test.mjs.
 Launch/stop: Open Ops Room.cmd / Stop Ops Room.cmd. Details: app README.
 Unrelated Chippy/Gigi/OpenCode/local-AI work stays untouched and uncommitted.
 Preserve safety/pre-reconcile-20260930 and pre-reconcile stash.
+
+
+## UX harvest checkpoint — 5 Oct 2026
+
+Andy approved the "steal and harvest" rule for useful app/reel ideas: harvest strong UX/workflow patterns into the existing Command Centre rather than adding another platform by default.
+
+Bordy-inspired home-screen upgrade implemented in Chippy:
+- Today / priority hero.
+- Command pulse.
+- Needs Attention cards.
+- Cleaner management-first hierarchy above the full project board.
+- Responsive mobile treatment.
+- Design/guardrail recorded in docs/ux-harvest.md.
+
+No AGON business source was migrated or replaced. AGON_BRAIN remains authoritative.
+Verification: node --check apps/chippy/public/app.js; node --test apps/chippy/server.test.mjs — 2/2 pass.
