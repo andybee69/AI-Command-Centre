@@ -31,7 +31,7 @@ function activityUpdates(events){
    const u=JSON.parse(e.body.slice(marker.length));
    if(!u||Array.isArray(u)||Object.keys(u).sort().join(',')!=='issueUrl,needsApproval,status,summary,taskId')continue;
    if(!['Andy','Chippy','Claude','Codex','OpenCode','Scout'].includes(e.author))continue;
-   if(!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(u.taskId)||u.taskId.length>100||!issue.test(u.issueUrl)||!['queued','working','blocked','review','done'].includes(u.status)||typeof u.summary!=='string'||!u.summary.trim()||u.summary.length>1000||/[\\u0000-\\u001f\\u007f]/.test(u.summary)||typeof u.needsApproval!=='boolean')continue;
+   if(!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(u.taskId)||u.taskId.length>100||!issue.test(u.issueUrl)||!['queued','working','blocked','review','done'].includes(u.status)||typeof u.summary!=='string'||!u.summary.trim()||u.summary.length>1000||/[\u0000-\u001f\u007f]/.test(u.summary)||typeof u.needsApproval!=='boolean')continue;
    if(!Array.isArray(e.issues)||e.issues.length!==1||e.issues[0]!==u.issueUrl)continue;
    latest.set(u.taskId,{...u,author:e.author,at:e.at});
   }catch{}
