@@ -96,3 +96,10 @@ Implemented `task-post` and `task-list` in `apps/ops-room/client.mjs`, reusing t
 **Verified on AGON_ONE:** `node --test apps/ops-room/agent-task.test.mjs apps/ops-room/agent-cli.test.mjs apps/ops-room/server.test.mjs` => **8 passed, 0 failed**. No live room writes, no AGON business files modified, no installation. This is a manual client protocol, not autonomous execution or independently authenticated agent identities.
 
 Next: review stacked draft PRs (#6 then CLI PR); do not merge without reviewing base branch and preserving existing work. Subsequent UI activity board is another ticket. AGON_ONE currently checked out on `feature/gigi-agent-cli-v1`; main was clean before branch checkout.
+
+
+## GIGI Agent Activity view — 8 Oct 2026
+
+Ticket #9. Branch `feature/gigi-activity-view-v1`, stacked atop #7 and #5 development branches. Adds a read-only `Agent Activity` tab in Ops Room displaying the latest validated task report by task ID, reported author, status, summary, approval flag and GitHub issue link. It is not an agent connection monitor or task executor. No live Ops Room data has been written.
+
+Verified on AGON_ONE: `node --check apps/ops-room/public/app.js` and `node --test apps/ops-room/agent-activity.test.mjs apps/ops-room/agent-task.test.mjs apps/ops-room/agent-cli.test.mjs apps/ops-room/server.test.mjs` => 10 passed, 0 failed. The browser view has not yet been manually inspected on phone/desktop. Keep stacked PRs draft until reviewed; no merge to main without review. Next step: review browser view with non-production sample events, then consider whether an approved agent status/heartbeat mechanism is useful. Maintain existing phone-access issue #3 separately.
