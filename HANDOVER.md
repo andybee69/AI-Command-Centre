@@ -83,6 +83,6 @@ Verification:
 Issue: #5. Branch: `feature/gigi-agent-handoff-v1`.
 Scope: additive `apps/ops-room/agent-task.mjs` contract and matching `agent-task.test.mjs`. Uses existing Ops Room message events, with a version marker and validated task status, issue URL, summary, author and approval flag. Latest status can be reconstructed from append-only messages. No model execution, installations, or live Ops Room writes.
 
-Status: code committed on feature branch; **tests not yet run** because this session has no shell access to repository content from GitHub. On AGON_ONE, first compare git status before fetching/pulling (preserve local uncommitted changes); inspect branch, then run `node --test apps/ops-room/agent-task.test.mjs` and `node --test apps/ops-room/server.test.mjs`. Fix any failures before merge. Main branch and issue #3 phone access are unchanged.
+Status: **all 7 tests passed on AGON_ONE (8 Oct 2026)**: `node --test apps/ops-room/agent-task.test.mjs` (3/3), `node --test apps/ops-room/server.test.mjs` (4/4). AGON_ONE checkout is on `feature/gigi-agent-handoff-v1`; tests passed. Review draft PR #6 before merge; after merge, switch the work PC back to `main` and pull carefully. Main branch and issue #3 phone access are unchanged.
 
 Next action: run those tests, review the contract, then consider wiring agent-task output into the existing `client.mjs post` workflow as a separate ticket. Human approval remains mandatory for external/sensitive actions.
