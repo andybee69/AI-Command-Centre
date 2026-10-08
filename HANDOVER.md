@@ -86,3 +86,13 @@ Scope: additive `apps/ops-room/agent-task.mjs` contract and matching `agent-task
 Status: **all 7 tests passed on AGON_ONE (8 Oct 2026)**: `node --test apps/ops-room/agent-task.test.mjs` (3/3), `node --test apps/ops-room/server.test.mjs` (4/4). AGON_ONE checkout is on `feature/gigi-agent-handoff-v1`; tests passed. Review draft PR #6 before merge; after merge, switch the work PC back to `main` and pull carefully. Main branch and issue #3 phone access are unchanged.
 
 Next action: run those tests, review the contract, then consider wiring agent-task output into the existing `client.mjs post` workflow as a separate ticket. Human approval remains mandatory for external/sensitive actions.
+
+
+## GIGI Ops Room CLI commands — 8 Oct 2026
+
+Ticket #7 on branch `feature/gigi-agent-cli-v1` (based on draft #6's agent handover branch).
+Implemented `task-post` and `task-list` in `apps/ops-room/client.mjs`, reusing the existing authenticated room API and protocol from #5. Added `agent-cli.test.mjs` integration test with temporary isolated room data.
+
+**Verified on AGON_ONE:** `node --test apps/ops-room/agent-task.test.mjs apps/ops-room/agent-cli.test.mjs apps/ops-room/server.test.mjs` => **8 passed, 0 failed**. No live room writes, no AGON business files modified, no installation. This is a manual client protocol, not autonomous execution or independently authenticated agent identities.
+
+Next: review stacked draft PRs (#6 then CLI PR); do not merge without reviewing base branch and preserving existing work. Subsequent UI activity board is another ticket. AGON_ONE currently checked out on `feature/gigi-agent-cli-v1`; main was clean before branch checkout.
