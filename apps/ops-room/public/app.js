@@ -24,7 +24,7 @@ function render(){
 }
 
 function activityUpdates(events){
- const latest=new Map(),marker='[gigi-agent-task:v1]\\n',issue=/^https:\\/\\/github\\.com\\/[\\w.-]+\\/[\\w.-]+\\/issues\\/[1-9]\\d*$/;
+ const latest=new Map(),marker='[gigi-agent-task:v1]\n',issue=/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/issues\/[1-9]\d*$/;
  for(const e of events){
   if(e?.kind!=='message'||typeof e.body!=='string'||!e.body.startsWith(marker))continue;
   try{
