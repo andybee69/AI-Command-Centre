@@ -1,14 +1,14 @@
 const $=id=>document.getElementById(id);
-let key=sessionStorage.getItem('ops-room-key')||'',state={events:[]},mode='ops',thread=null,promotionTarget=null,loading=false;
+let key=sessionStorage.getItem('ops-room-key')||'',state={events:[]},mode='ops',thread=null,promotionTarget=null,loading=false,officeDesk='Chippy',officeConnected=false;
 const el=(tag,text,className)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n;};
 function error(e){$('error').textContent=e?.message||'';}
 async function api(route,body){const r=await fetch('/api/'+route,{method:body?'POST':'GET',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});const data=await r.json();if(!r.ok)throw new Error(data.error||'Request failed');return data;}
 function options(id,values){for(const value of values)$(id).append(new Option(value,value));}
 function issueLinks(parent,links){for(const url of links||[]){const a=el('a','#'+url.split('/').at(-1));a.href=url;a.target='_blank';a.rel='noopener';a.title=url;parent.append(a,document.createTextNode(' '));}}
-async function refresh(){if(loading||!key)return;loading=true;try{const next=await api('state');state=next;if(!$('author').options.length){options('author',state.authors);options('filter-author',state.authors);options('type',state.types);options('filter-type',state.types);$('author').value=sessionStorage.getItem('ops-room-author')||'Andy';}$('login').hidden=true;$('room').hidden=false;$('connection').textContent='Connected · saved on AGON_ONE';render();error();}catch(e){$('connection').textContent='Disconnected · retry with Refresh';error(e);}finally{loading=false;}}
+async function refresh(){if(loading||!key)return;loading=true;try{const next=await api('state');state=next;officeConnected=true;if(!$('author').options.length){options('author',state.authors);options('filter-author',state.authors);options('type',state.types);options('filter-type',state.types);$('author').value=sessionStorage.getItem('ops-room-author')||'Andy';}$('login').hidden=true;$('room').hidden=false;$('connection').textContent='Connected · saved on AGON_ONE';render();error();}catch(e){officeConnected=false;$('connection').textContent='Disconnected · retry with Refresh';if(mode==='office')renderOffice();error(e);}finally{loading=false;}}
 async function post(body){return api('events',{...body,author:$('author').value});}
 function render(){
- $('activity-view').hidden=mode!=='activity';$('room-layout').hidden=mode==='activity';$('activity-tab').setAttribute('aria-pressed',mode==='activity');if(mode==='activity'){renderActivity();return;}
+ $('office-view').hidden=mode!=='office';$('office-tab').setAttribute('aria-pressed',mode==='office');$('activity-view').hidden=mode!=='activity';$('room-layout').hidden=mode==='activity'||mode==='office';$('activity-tab').setAttribute('aria-pressed',mode==='activity');if(mode==='office'){renderOffice();return;}if(mode==='activity'){renderActivity();return;}
  $('threads').hidden=mode!=='conference';$('ops-tab').setAttribute('aria-pressed',mode==='ops');$('conference-tab').setAttribute('aria-pressed',mode==='conference');
  const threads=state.events.filter(e=>e.kind==='thread');if(mode==='conference'&&!threads.some(e=>e.id===thread))thread=threads[0]?.id||null;
  const selected=threads.find(e=>e.id===thread);$('room-title').textContent=mode==='ops'?'Ops Room':selected?.title||'Conference Room';$('room-detail').textContent=mode==='ops'?'One shared feed for day-to-day coordination.':'Andy + Chippy + Claude · approach, results, disagreements and next steps.'+(selected?' Started by '+selected.author+' · '+new Date(selected.at).toLocaleString():'');
@@ -53,10 +53,36 @@ function renderActivity(){
  }
 }
 
+
+const officeRoster=[['Chippy','☕','Command & approvals'],['Claude','💼','Project collaboration'],['Codex','🛠️','Development'],['OpenCode','💻','Local coding'],['Scout','🔍','Research'],['Andy','📋','Management & decisions']];
+function renderOffice(){
+ const desks=$('office-desks'),detail=$('office-detail');desks.replaceChildren();detail.replaceChildren();
+ $('office-health').textContent=officeConnected?'Connected to Ops Room · showing historical self-reported updates':'Offline · historical reports only; current activity unverified';
+ const all=activityUpdates(state.events||[]);
+ for(const [name,emoji,role] of officeRoster){
+  const tasks=all.filter(t=>t.author===name),b=el('button',undefined,'office-desk');
+  b.type='button';b.setAttribute('aria-pressed',String(officeDesk===name));
+  b.append(el('strong',emoji+' '+name),el('small',role),el('small',tasks.length+' reported task'+(tasks.length===1?'':'s')));
+  b.onclick=()=>{officeDesk=name;renderOffice();};desks.append(b);
+ }
+ detail.append(el('h3',officeDesk+' — latest reported tasks'));
+ const tasks=all.filter(t=>t.author===officeDesk);
+ if(!tasks.length){detail.append(el('p','No recorded tasks for this desk. This does not mean the agent is idle.','note'));return;}
+ for(const t of tasks){
+  const box=el('article',undefined,'office-task');
+  box.append(el('strong',t.taskId),el('span',' · '+t.status,'badge'),el('p',t.summary));
+  const date=t.at?new Date(t.at):null;
+  box.append(el('p',date&&!Number.isNaN(date.getTime())?'Last reported: '+date.toLocaleString():'Last reported: time unknown','note'));
+  if(t.needsApproval)box.append(el('p','Approval required','approval'));
+  const link=el('a','Open source GitHub issue');link.href=t.issueUrl;link.target='_blank';link.rel='noopener';box.append(link);
+  detail.append(box);
+ }
+}
+
 function updateIssueLink(){$('new-issue').href='https://github.com/andybee69/AI-Command-Centre/issues/new?'+new URLSearchParams({title:$('conclusion').value.slice(0,100),body:$('conclusion').value+'\n\nSource: T2 room message '+promotionTarget});}
 $('login-form').onsubmit=async e=>{e.preventDefault();key=$('key').value.trim();sessionStorage.setItem('ops-room-key',key);await refresh();};
 $('disconnect').onclick=()=>{key='';sessionStorage.removeItem('ops-room-key');$('room').hidden=true;$('login').hidden=false;$('key').value='';$('connection').textContent='Not connected';};
-$('ops-tab').onclick=()=>{mode='ops';render();};$('conference-tab').onclick=()=>{mode='conference';render();};$('activity-tab').onclick=()=>{mode='activity';render();};$('refresh').onclick=refresh;
+$('ops-tab').onclick=()=>{mode='ops';render();};$('conference-tab').onclick=()=>{mode='conference';render();};$('activity-tab').onclick=()=>{mode='activity';render();};$('office-tab').onclick=()=>{mode='office';render();};$('refresh').onclick=refresh;
 for(const id of ['search','filter-author','filter-type'])$(id).oninput=render;
 $('author').onchange=()=>sessionStorage.setItem('ops-room-author',$('author').value);
 const parseLinks=id=>$(id).value.split(/\s+/).filter(Boolean);
